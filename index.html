@@ -729,11 +729,14 @@ async function loadAnswers() {
 }
 
 async function saveAnswers(answers) {
-  await fetch(JSONBIN_URL, {
+  const res = await fetch(JSONBIN_URL, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
     body: JSON.stringify({ answers })
   });
+  const text = await res.text();
+  console.log('JSONBin PUT status:', res.status, text);
+  if (!res.ok) throw new Error('Save failed: ' + res.status + ' ' + text);
 }
 
 // ── PRESENTER MODE ──

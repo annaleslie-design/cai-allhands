@@ -707,12 +707,17 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
   btn.textContent = 'Submitting...';
 
   try {
+    console.log('Step 1: loading answers...');
     const existing = await loadAnswers();
+    console.log('Step 2: loaded', existing.length, 'answers');
     existing.push(val);
+    console.log('Step 3: saving', existing.length, 'answers...');
     await saveAnswers(existing);
+    console.log('Step 4: saved successfully');
     document.getElementById('submit-form').style.display = 'none';
     document.getElementById('submit-confirm').classList.add('visible');
   } catch(e) {
+    console.error('FAILED at step:', e.message);
     btn.disabled = false;
     btn.textContent = 'Try again';
   }

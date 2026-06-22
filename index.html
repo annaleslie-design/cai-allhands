@@ -684,6 +684,7 @@
 <script>
 // ── JSONBIN CONFIG ──
 const BIN_ID = '6a399ab9da38895dfeedc8c3';
+const JSONBIN_KEY = '$2a$10$0fVIjeGUsaGO1AssFAxDFOI6wgFral1tWJ7iNB96l1Vh4WNb291lC';
 const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 // ── MODE DETECTION ──
@@ -720,7 +721,7 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
 async function loadAnswers() {
   try {
     const res = await fetch(JSONBIN_URL, {
-      headers: { 'X-Bin-Meta': 'false' }
+      headers: { 'X-Bin-Meta': 'false', 'X-Master-Key': JSONBIN_KEY }
     });
     const data = await res.json();
     return Array.isArray(data.answers) ? data.answers : [];
@@ -730,7 +731,7 @@ async function loadAnswers() {
 async function saveAnswers(answers) {
   await fetch(JSONBIN_URL, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
     body: JSON.stringify({ answers })
   });
 }

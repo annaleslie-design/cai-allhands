@@ -682,9 +682,9 @@
 </div>
 
 <script>
-// ── CONFIG ──
-const STORAGE_KEY = 'cai-allhands-answers';
-const SHARED = true;
+// ── JSONBIN CONFIG ──
+const BIN_ID = '6a399ab9da38895dfeedc8c3';
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 // ── MODE DETECTION ──
 const params = new URLSearchParams(window.location.search);
@@ -703,11 +703,12 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
   if (!val) return;
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
+  btn.textContent = 'Submitting...';
 
   try {
     const existing = await loadAnswers();
     existing.push(val);
-    await window.storage.set(STORAGE_KEY, JSON.stringify(existing), SHARED);
+    await saveAnswers(existing);
     document.getElementById('submit-form').style.display = 'none';
     document.getElementById('submit-confirm').classList.add('visible');
   } catch(e) {
@@ -718,9 +719,20 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
 
 async function loadAnswers() {
   try {
-    const result = await window.storage.get(STORAGE_KEY, SHARED);
-    return result ? JSON.parse(result.value) : [];
+    const res = await fetch(JSONBIN_URL, {
+      headers: { 'X-Bin-Meta': 'false' }
+    });
+    const data = await res.json();
+    return Array.isArray(data.answers) ? data.answers : [];
   } catch(e) { return []; }
+}
+
+async function saveAnswers(answers) {
+  await fetch(JSONBIN_URL, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ answers })
+  });
 }
 
 // ── PRESENTER MODE ──
